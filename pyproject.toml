@@ -1,0 +1,20 @@
+[project]
+name = "henry-mcp"
+version = "0.1.0"
+description = "Static compatibility analysis MCP server for EXE/DLL/APK/Kotlin modules"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "RivaExits0" }]
+keywords = ["mcp", "static-analysis", "compatibility", "pe", "apk", "kotlin"]
+dependencies = [
+    "mcp>=1.0",
+    "pefile>=2024.1.8",
+]
+
+[project.scripts]
+henry-mcp = "server:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
