@@ -12,9 +12,19 @@ dependencies = [
     "pefile>=2024.1.8",
 ]
 
+[project.optional-dependencies]
+dev = ["pytest"]
+
 [project.scripts]
 henry-mcp = "server:main"
+
+[tool.setuptools]
+py-modules = ["server", "analyzer", "formats", "reports", "platform_utils"]
 
 [build-system]
 requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
