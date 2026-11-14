@@ -16,7 +16,7 @@ try:
 except Exception:
     from mcp.server.mcpserver import MCPServer as FastMCP
 
-from analyzer import Analyzer
+from henry_mcp.analyzer import Analyzer
 
 mcp = FastMCP("henry")
 analyzer = Analyzer()

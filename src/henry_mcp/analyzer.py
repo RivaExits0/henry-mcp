@@ -9,8 +9,8 @@ from __future__ import annotations
 import os
 from typing import Any, Dict, List, Optional
 
-from formats import inspect_file as _formats_inspect_file, detect_format, FormatError
-from reports import Report, Finding, ReportStore, new_finding_id, paginate
+from henry_mcp.formats import inspect_file as _formats_inspect_file, detect_format, FormatError
+from henry_mcp.reports import Report, Finding, ReportStore, new_finding_id, paginate
 
 # Architecture compatibility groups
 ARCH_GROUPS = {

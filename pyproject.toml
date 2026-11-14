@@ -6,7 +6,20 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "RivaExits0" }]
-keywords = ["mcp", "static-analysis", "compatibility", "pe", "apk", "kotlin"]
+keywords = ["mcp", "model-context-protocol", "static-analysis", "compatibility", "pe", "apk", "kotlin", "reverse-engineering"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Debuggers",
+    "Topic :: Security",
+    "Topic :: Utilities",
+]
 dependencies = [
     "mcp>=1.0",
     "pefile>=2024.1.8",
@@ -16,15 +29,20 @@ dependencies = [
 dev = ["pytest"]
 
 [project.scripts]
-henry-mcp = "server:main"
+henry-mcp = "henry_mcp.server:main"
 
-[tool.setuptools]
-py-modules = ["server", "analyzer", "formats", "reports", "platform_utils"]
+[project.urls]
+Homepage = "https://github.com/RivaExits0/henry-mcp"
+Issues = "https://github.com/RivaExits0/henry-mcp/issues"
+Repository = "https://github.com/RivaExits0/henry-mcp"
 
 [build-system]
 requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["."]
+pythonpath = ["src"]

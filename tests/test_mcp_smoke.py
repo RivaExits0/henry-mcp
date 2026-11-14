@@ -7,6 +7,7 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
+sys.path.insert(0, os.path.join(ROOT, "src"))
 sys.path.insert(0, os.path.join(ROOT, "tests"))
 
 from test_henry import make_pe_exe, make_pe_dll, make_apk, make_kt, FIXTURE_DIR
@@ -28,7 +29,12 @@ def test_mcp_smoke():
     from mcp.client.stdio import stdio_client
 
     async def main():
-        params = StdioServerParameters(command="python3", args=["server.py"], cwd=ROOT)
+        params = StdioServerParameters(
+            command="henry-mcp",
+            args=[],
+            cwd=ROOT,
+            env={**os.environ, "PYTHONPATH": os.path.join(ROOT, "src")}
+        )
         async with stdio_client(params) as (r, w):
             async with ClientSession(r, w) as s:
                 await s.initialize()

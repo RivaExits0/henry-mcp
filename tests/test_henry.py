@@ -11,10 +11,10 @@ import struct
 import zipfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, ROOT)
+sys.path.insert(0, os.path.join(ROOT, "src"))
 
-from formats import detect_format, inspect_file, FormatError
-from analyzer import Analyzer
+from henry_mcp.formats import detect_format, inspect_file, FormatError
+from henry_mcp.analyzer import Analyzer
 
 
 # --------------------------------------------------------------------------- #
@@ -339,7 +339,7 @@ def test_low_confidence_no_evidence():
 
 
 def test_pagination():
-    from reports import paginate
+    from henry_mcp.reports import paginate
     items = list(range(25))
     page = paginate(items, limit=10, offset=0)
     assert page["total"] == 25

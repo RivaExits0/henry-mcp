@@ -16,6 +16,18 @@ injecting, or modifying any file.
 > kanıtla desteklenen uyumluluk tahminleri üretir. Hiçbir dosyayı çalıştırmaz,
 > enjekte etmez veya değiştirmez.
 
+---
+
+## 🎯 Quick Use Cases
+
+- **EXE + DLL** — "Will this DLL load in my EXE?" → Architecture match, missing dependencies, exported symbols
+- **APK + Kotlin** — "Is this Kotlin source compatible with my APK?" → Package match, SDK version, permission alignment
+- **APK + .so** — "Does this native library work with my APK?" → JNI signature match, architecture (ARM64 vs x86)
+
+**Important:** henry-mcp performs **static analysis only** — it never executes, injects, or loads any code. Results are evidence-backed inferences, not runtime guarantees.
+
+---
+
 ## Supported File Types
 
 | Format | Extension | What is extracted |
@@ -25,6 +37,8 @@ injecting, or modifying any file.
 | Android APK | `.apk` | Package, min/target/max SDK, permissions, native libs, DEX, components |
 | Kotlin source | `.kt` | Package, imports, classes, functions, integration hints |
 
+---
+
 ## Supported Analysis Pairs
 
 | Pair | Description |
@@ -33,27 +47,60 @@ injecting, or modifying any file.
 | APK + Kotlin | Android app + source compatibility — package match, Android API hints |
 | APK + PE | Android app + native library (PE) — flagged as incompatible (Android needs ELF `.so`) |
 
+---
+
 ## Install
 
+### From PyPI (when published)
 ```bash
-pip install "mcp>=1.0" pefile
+pip install henry-mcp
 ```
 
-Or from source:
+### From GitHub
+```bash
+pip install git+https://github.com/RivaExits0/henry-mcp.git
+```
 
+### From Source
 ```bash
 git clone https://github.com/RivaExits0/henry-mcp.git
 cd henry-mcp
-pip install -e .
+pip install -e .[dev]    # or just `pip install -e .` for production
 ```
+
+---
 
 ## Run
 
 ```bash
-python server.py
+henry-mcp
+# or
+python -m henry_mcp
 ```
 
 The server speaks MCP over **stdio**.
+
+---
+
+## Claude Desktop Integration
+
+Add to `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "henry-mcp": {
+      "command": "henry-mcp",
+      "args": [],
+      "env": {}
+    }
+  }
+}
+```
+
+> **Windows:** If installed via pip, `henry-mcp` should be on PATH. Otherwise use full path: `C:\\path\\to\\henry-mcp\\.venv\\Scripts\\henry-mcp.exe`.
+
+---
 
 ## OpenCode Integration
 
@@ -64,12 +111,14 @@ Add to `opencode.json`:
   "mcp": {
     "henry": {
       "type": "local",
-      "command": ["python", "/path/to/henry-mcp/server.py"],
+      "command": ["henry-mcp"],
       "enabled": true
     }
   }
 }
 ```
+
+---
 
 ## MCP Tools
 
@@ -80,6 +129,8 @@ Add to `opencode.json`:
 | `henry_predict_failure_scenarios(app_path, module_path, limit, offset)` | Evidence-backed failure scenarios with severity, confidence, validation_needed. | After `analyze_pair`, to see what could go wrong. |
 | `henry_explain_finding(finding_id)` | Explain a previous finding: observed vs inferred value, evidence. | When you want details about a specific finding ID. |
 | `henry_reset()` | Clear all stored analysis findings and reports. | Between unrelated analysis sessions. |
+
+---
 
 ### Tool: `henry_inspect_file`
 
@@ -142,6 +193,8 @@ Add to `opencode.json`:
 }
 ```
 
+---
+
 ### Tool: `henry_analyze_pair`
 
 **Example call:**
@@ -180,6 +233,8 @@ Add to `opencode.json`:
 }
 ```
 
+---
+
 ### Tool: `henry_predict_failure_scenarios`
 
 **Example call:**
@@ -216,6 +271,8 @@ Add to `opencode.json`:
 }
 ```
 
+---
+
 ### Tool: `henry_explain_finding`
 
 **Example call:**
@@ -238,6 +295,8 @@ Add to `opencode.json`:
 }
 ```
 
+---
+
 ### Tool: `henry_reset`
 
 **Example call:**
@@ -250,6 +309,8 @@ Add to `opencode.json`:
 {"cleared_findings": 12}
 ```
 
+---
+
 ## Pagination (`limit` / `offset`)
 
 All three analysis tools (`henry_inspect_file`, `henry_analyze_pair`, `henry_predict_failure_scenarios`) support `limit` and `offset` for long result lists:
@@ -259,14 +320,18 @@ All three analysis tools (`henry_inspect_file`, `henry_analyze_pair`, `henry_pre
 
 Response includes a `pagination` object with `total`, `offset`, `limit`, `returned`, and `has_more`.
 
+---
+
 ## Testing
 
 ```bash
-pip install pytest
-python -m pytest -q
+pip install -e .[dev]
+pytest -q
 ```
 
 Tests use generated fixtures (no user-owned EXE/APK required). 25 unit tests + 1 MCP smoke test.
+
+---
 
 ## Static Analysis vs Runtime Verification
 
@@ -279,6 +344,8 @@ Tests use generated fixtures (no user-owned EXE/APK required). 25 unit tests + 1
 
 **Important:** henry-mcp never executes, injects, patches, or modifies any file. All conclusions are static inferences, not runtime guarantees.
 
+---
+
 ## Security
 
 - No `shell=True`; all external commands use argument lists (none in first release).
@@ -288,6 +355,8 @@ Tests use generated fixtures (no user-owned EXE/APK required). 25 unit tests + 1
 - Path traversal is rejected.
 - Sensitive content (keys, tokens, passwords) is not dumped; only its presence is noted.
 
+---
+
 ## Limitations
 
 - PE analysis requires the `pefile` library.
@@ -296,6 +365,29 @@ Tests use generated fixtures (no user-owned EXE/APK required). 25 unit tests + 1
 - No actual DLL loading, JNI binding, or classpath resolution is tested.
 - Compatibility is an inference, not a guarantee.
 - Findings are stored in-memory only; `henry_reset()` clears them.
+
+---
+
+## 🔗 Related Projects
+
+- **forge-mcp** — Game modding toolkit (hex, PE, APK, Unity, Unreal, tables). Use for hex editing, signature generation, APK repacking.
+- **emu-mcp** — Isolated function emulation with Unicorn. Use for verifying function behavior with concrete inputs.
+- **crash-mcp** — Crash dump analysis (ELF core + Windows minidump). Use for post-mortem debugging.
+
+---
+
+## 📦 Release
+
+- **Latest:** [v0.1.0](https://github.com/RivaExits0/henry-mcp/releases/tag/v0.1.0)
+- **Install from release:** `pip install git+https://github.com/RivaExits0/henry-mcp.git@v0.1.0`
+
+### Create Release
+```bash
+git tag -a v0.1.0 -m "henry-mcp v0.1.0: Initial release"
+git push origin v0.1.0
+```
+
+---
 
 ## License
 
